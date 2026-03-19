@@ -1,0 +1,7 @@
+{
+  "name": "Carlos Ampliador de Galeria - v8",
+  "description": "Uma ferramenta de IA para humanizar imagens de empreendimentos imobiliários e criar cenas criativas em áreas comuns, integrada ao banco de dados Supabase.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

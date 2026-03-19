@@ -5,7 +5,14 @@ import { Profile, Organization } from './types';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 
-// Removed redundant declare global for aistudio to resolve type conflict with existing AIStudio definition in the environment.
+declare global {
+  interface Window {
+    aistudio: {
+      hasSelectedApiKey: () => Promise<boolean>;
+      openSelectKey: () => Promise<void>;
+    };
+  }
+}
 
 const App: React.FC = () => {
   const [session, setSession] = useState<any>(null);
@@ -37,23 +44,29 @@ const App: React.FC = () => {
   }, []);
 
   const checkApiKey = async () => {
-    // Se a chave de API já estiver no ambiente (VITE_GEMINI_API_KEY), ignoramos o seletor manual
-    if (import.meta.env.VITE_GEMINI_API_KEY) {
+    const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+    
+    // Se a chave de API já estiver no ambiente, ignoramos o seletor manual
+    if (envKey && envKey.length > 5) {
       setHasApiKey(true);
       return;
     }
 
     try {
-      // @ts-ignore - aistudio is provided by the global environment
-      const selected = await window.aistudio.hasSelectedApiKey();
-      setHasApiKey(selected);
+      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
+        const selected = await window.aistudio.hasSelectedApiKey();
+        setHasApiKey(selected);
+      } else {
+        // Se não estiver no ambiente AI Studio (ex: produção real), assume que a chave vem do env
+        setHasApiKey(true);
+      }
     } catch (e) {
       console.error("Erro ao verificar chave de API", e);
+      setHasApiKey(true); // Fallback para não bloquear o usuário
     }
   };
 
   const handleOpenKeySelector = async () => {
-    // @ts-ignore - aistudio is provided by the global environment
     await window.aistudio.openSelectKey();
     setHasApiKey(true); // Assume sucesso após abrir o seletor conforme instrução
   };

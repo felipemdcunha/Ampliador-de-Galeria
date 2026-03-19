@@ -284,50 +284,60 @@ const Dashboard: React.FC<Props> = ({ profile, organization }) => {
       )}
 
       {previewItem && (
-        <div className="fixed inset-0 z-[150] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md p-4 md:p-10 animate-in fade-in duration-300">
-          <button 
-            onClick={() => setPreviewItem(null)}
-            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2 bg-white/10 rounded-full"
-          >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          <div className="relative w-full max-w-5xl flex-1 flex flex-col items-center justify-center gap-6">
-            <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
-              <img 
-                src={previewItem.generated_image_url || previewItem.original_image_url} 
-                className="max-w-full max-h-full object-contain"
-                alt="Preview Ampliada"
-              />
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[90vw] md:max-w-[80vw] h-[90vh] md:h-[80vh] flex flex-col overflow-hidden relative">
+            {/* Header / Close Button */}
+            <div className="absolute top-4 right-4 z-10">
+              <button 
+                onClick={() => setPreviewItem(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-2 bg-gray-100 rounded-full"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
-            <div className="w-full text-center space-y-6">
-              <p className="text-white/80 text-sm md:text-base italic font-medium max-w-2xl mx-auto px-4">
-                "{previewItem.prompt_image_used || 'Prompt não informado'}"
-              </p>
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
+              <div className="flex flex-col items-center gap-8">
+                <div className="w-full flex items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 overflow-hidden shadow-inner">
+                  <img 
+                    src={previewItem.generated_image_url || previewItem.original_image_url} 
+                    className="max-w-full h-auto object-contain"
+                    alt="Preview Ampliada"
+                  />
+                </div>
 
-              <div className="flex flex-wrap justify-center gap-4">
-                <button 
-                  onClick={() => handleDownload(previewItem.generated_image_url || previewItem.original_image_url, `ampliada_${previewItem.id}.png`)}
-                  className="bg-[#f44563] hover:bg-[#d63d57] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition shadow-lg active:scale-95"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Baixar Imagem
-                </button>
-                <button 
-                  onClick={() => handleDelete(previewItem.id, previewItem.generated_image_url)}
-                  className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition active:scale-95"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Excluir
-                </button>
+                <div className="w-full text-center pb-4">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Prompt Utilizado</h4>
+                  <p className="text-gray-700 text-sm md:text-base italic font-medium max-w-3xl mx-auto leading-relaxed">
+                    "{previewItem.prompt_image_used || 'Prompt não informado'}"
+                  </p>
+                </div>
               </div>
+            </div>
+
+            {/* Fixed Footer with Actions */}
+            <div className="flex-shrink-0 border-t border-gray-100 bg-gray-50 p-6 flex flex-wrap justify-center gap-4">
+              <button 
+                onClick={() => handleDownload(previewItem.generated_image_url || previewItem.original_image_url, `ampliada_${previewItem.id}.png`)}
+                className="bg-[#f44563] hover:bg-[#d63d57] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition shadow-lg active:scale-95"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Baixar Imagem
+              </button>
+              <button 
+                onClick={() => handleDelete(previewItem.id, previewItem.generated_image_url)}
+                className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition active:scale-95 shadow-sm"
+              >
+                <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Excluir
+              </button>
             </div>
           </div>
         </div>

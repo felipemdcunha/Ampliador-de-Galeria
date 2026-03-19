@@ -3,7 +3,11 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 export class GeminiService {
   private getClient() {
-    return new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("VITE_GEMINI_API_KEY não encontrada no ambiente. Verifique as configurações de segredos.");
+    }
+    return new GoogleGenAI({ apiKey });
   }
 
   // Lógica de retry para erros transientes (como 503 - Overloaded)

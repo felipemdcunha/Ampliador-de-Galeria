@@ -37,6 +37,12 @@ const App: React.FC = () => {
   }, []);
 
   const checkApiKey = async () => {
+    // Se a chave de API já estiver no ambiente (VITE_GEMINI_API_KEY), ignoramos o seletor manual
+    if (import.meta.env.VITE_GEMINI_API_KEY) {
+      setHasApiKey(true);
+      return;
+    }
+
     try {
       // @ts-ignore - aistudio is provided by the global environment
       const selected = await window.aistudio.hasSelectedApiKey();

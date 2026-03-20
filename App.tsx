@@ -24,6 +24,27 @@ const App: React.FC = () => {
   useEffect(() => {
     checkApiKey();
     
+    // Check for session in URL (if passed by parent via query params)
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const refreshToken = urlParams.get('refresh_token');
+    
+    if (accessToken && refreshToken) {
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
+    }
+
+    // Listen for session from parent via postMessage
+    const handleMessage = (event: MessageEvent) => {
+      // You might want to validate the origin here for security
+      if (event.data?.type === 'AUTH_SESSION' && event.data?.session) {
+        supabase.auth.setSession(event.data.session);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) fetchUserData(session.user.id);
@@ -40,7 +61,10 @@ const App: React.FC = () => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   const checkApiKey = async () => {
